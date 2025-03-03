@@ -1,23 +1,25 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { CircularProgress, Box } from '@mui/material';
 
-const RequireAuth = ({ children }) => {
-  const { isLoggedIn, loading } = useAuth();
-  const location = useLocation();
+const RequireAuth = ({ children, requireAdmin = false }) => {
+  const { isLoggedIn, currentUser, loading, testMode } = useAuth();
+
+  // W trybie testowym zawsze renderuj zawartość, ponieważ uznajemy, że użytkownik jest zalogowany
+  if (testMode) {
+    return children;
+  }
 
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <div>Ładowanie...</div>;
   }
 
   if (!isLoggedIn) {
-    // Redirect to login page but save the location they were trying to access
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/login" />;
+  }
+
+  if (requireAdmin && !currentUser?.is_superuser) {
+    return <Navigate to="/dashboard" />;
   }
 
   return children;
