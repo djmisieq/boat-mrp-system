@@ -14,6 +14,11 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // Określenie bazowego URL API
+  const API_BASE_URL = process.env.NODE_ENV === 'production' 
+    ? '' // Pusty string użyje obecnego hosta w produkcji
+    : 'http://localhost:8000'; // Lokalne środowisko dev
+
   // Check if token exists and is valid on component mount
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -45,7 +50,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get('/api/v1/users/me');
+      const response = await axios.get(`${API_BASE_URL}/api/v1/users/me`);
       setCurrentUser(response.data);
       setIsLoggedIn(true);
       setLoading(false);
@@ -57,12 +62,23 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      console.log('Próba logowania:', {email, password});
+      
       // Fast API expects form data for OAuth2 login
       const formData = new FormData();
       formData.append('username', email);
       formData.append('password', password);
       
-      const response = await axios.post('/api/v1/auth/login', formData);
+      console.log('Wysyłanie żądania do:', `${API_BASE_URL}/api/v1/auth/login`);
+      
+      const response = await axios.post(`${API_BASE_URL}/api/v1/auth/login`, formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      
+      console.log('Odpowiedź z serwera:', response.data);
+      
       const { access_token } = response.data;
       
       localStorage.setItem('accessToken', access_token);
@@ -73,6 +89,10 @@ export const AuthProvider = ({ children }) => {
       return true;
     } catch (error) {
       console.error('Login error:', error);
+      if (error.response) {
+        console.error('Status:', error.response.status);
+        console.error('Data:', error.response.data);
+      }
       toast.error('Błąd logowania: Nieprawidłowy email lub hasło');
       return false;
     }
