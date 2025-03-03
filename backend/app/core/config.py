@@ -13,8 +13,14 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "b6d01c8de68f9c85e5bc2e0554c3e0f9db3e42651a1a8e5e"  # W produkcji użyj silnego klucza
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 dni
 
-    # CORS
-    BACKEND_CORS_ORIGINS: List[Union[str, AnyHttpUrl]] = ["http://localhost:3000", "http://localhost:8000"]
+    # CORS - akceptuj żądania z każdego źródła w środowisku deweloperskim
+    BACKEND_CORS_ORIGINS: List[Union[str, AnyHttpUrl]] = [
+        "http://localhost:3000", 
+        "http://localhost:8000", 
+        "https://localhost:3000", 
+        "https://localhost:8000", 
+        "*"
+    ]
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
