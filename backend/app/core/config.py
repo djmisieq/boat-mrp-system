@@ -1,6 +1,7 @@
 from typing import List, Optional, Union
 from pydantic_settings import BaseSettings
 from pydantic import AnyHttpUrl, validator
+import os
 
 
 class Settings(BaseSettings):
@@ -24,7 +25,11 @@ class Settings(BaseSettings):
         raise ValueError(v)
 
     # Baza danych
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/mrp_db"
+    # Używaj SQLite w środowisku Codespaces, jeśli nie ma dostępu do PostgreSQL
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL", 
+        "sqlite:///./mrp_db.sqlite" if os.environ.get("CODESPACES") else "postgresql://postgres:postgres@localhost:5432/mrp_db"
+    )
 
     class Config:
         env_file = ".env"
