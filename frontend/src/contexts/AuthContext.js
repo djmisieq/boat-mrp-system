@@ -13,14 +13,34 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  // Flaga trybu testowego - ustaw na false w środowisku produkcyjnym
+  const TEST_MODE = true;
 
   // Określenie bazowego URL API
   const API_BASE_URL = process.env.NODE_ENV === 'production' 
     ? '' // Pusty string użyje obecnego hosta w produkcji
     : 'http://localhost:8000'; // Lokalne środowisko dev
 
-  // Check if token exists and is valid on component mount
+  // Sprawdzenie, czy token istnieje lub tryb testowy jest włączony
   useEffect(() => {
+    if (TEST_MODE) {
+      console.log("🔬 Tryb testowy: Automatyczne logowanie bez uwierzytelniania");
+      // Symuluj zalogowanego użytkownika w trybie testowym
+      setCurrentUser({
+        id: 1,
+        email: 'test@example.com',
+        first_name: 'Test',
+        last_name: 'User',
+        department: 'IT',
+        is_active: true,
+        is_superuser: true
+      });
+      setIsLoggedIn(true);
+      setLoading(false);
+      return;
+    }
+
     const token = localStorage.getItem('accessToken');
     
     if (token) {
@@ -61,6 +81,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
+    // W trybie testowym zawsze zwracaj sukces logowania
+    if (TEST_MODE) {
+      console.log("🔬 Tryb testowy: Automatyczne logowanie dla", {email, password});
+      setCurrentUser({
+        id: 1,
+        email: email || 'test@example.com',
+        first_name: 'Test',
+        last_name: 'User',
+        department: 'IT',
+        is_active: true,
+        is_superuser: true
+      });
+      setIsLoggedIn(true);
+      toast.success('Zalogowano pomyślnie (tryb testowy)');
+      return true;
+    }
+
     try {
       console.log('Próba logowania:', {email, password});
       
@@ -99,6 +136,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    if (TEST_MODE) {
+      console.log("🔬 Tryb testowy: Wylogowanie (symulowane)");
+      // W trybie testowym tylko symulujemy wylogowanie
+      toast.info('Wylogowano (tryb testowy)');
+      return;
+    }
+
     localStorage.removeItem('accessToken');
     delete axios.defaults.headers.common['Authorization'];
     setCurrentUser(null);
@@ -111,7 +155,8 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn,
     login,
     logout,
-    loading
+    loading,
+    testMode: TEST_MODE
   };
 
   return (
