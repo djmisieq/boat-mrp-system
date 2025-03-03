@@ -4,6 +4,8 @@ from fastapi.openapi.utils import get_openapi
 
 from app.core.config import settings
 from app.api.api_v1.api import api_router
+from app.db.session import SessionLocal
+from app.db.init_db import init_db
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -44,3 +46,13 @@ app.openapi = custom_openapi
 @app.get("/")
 def root():
     return {"message": "Witaj w systemie MRP dla produkcji łodzi. Dokumentacja API dostępna pod /docs"}
+
+
+# Inicjalizacja domyślnego administratora przy starcie aplikacji
+@app.on_event("startup")
+def startup_db_client():
+    db = SessionLocal()
+    try:
+        init_db(db)
+    finally:
+        db.close()
