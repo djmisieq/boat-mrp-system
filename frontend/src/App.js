@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Products from './pages/Products';
 import BOMs from './pages/BOMs';
 import Orders from './pages/Orders';
+import MaterialRequirements from './pages/MaterialRequirements';
 import NotFound from './pages/NotFound';
 
 // Components
@@ -44,6 +45,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/boms" element={<BOMs />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/material-requirements" element={<MaterialRequirements />} />
         </Route>
         
         <Route path="*" element={<NotFound />} />
