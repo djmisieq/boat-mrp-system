@@ -17,3 +17,4 @@ class User(Base):
     
     # Relacje
     orders = relationship("Order", back_populates="user")
+    material_requirements = relationship("MaterialRequirement", back_populates="user")
