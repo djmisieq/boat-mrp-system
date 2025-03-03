@@ -26,7 +26,8 @@ import {
   ListAlt as ListAltIcon,
   Assignment as AssignmentIcon,
   ChevronLeft as ChevronLeftIcon,
-  AccountCircle as AccountCircleIcon
+  AccountCircle as AccountCircleIcon,
+  Calculate as CalculateIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -109,6 +110,7 @@ export default function Layout() {
     { text: 'Produkty', icon: <InventoryIcon />, path: '/products' },
     { text: 'Listy BOM', icon: <ListAltIcon />, path: '/boms' },
     { text: 'Zamówienia', icon: <AssignmentIcon />, path: '/orders' },
+    { text: 'Zapotrzebowanie MRP', icon: <CalculateIcon />, path: '/material-requirements' },
   ];
 
   return (
