@@ -61,12 +61,10 @@ Frontend będzie dostępny pod adresem: http://localhost:3000
 
 ## 6. Pierwsze logowanie
 
-W tej wersji MVP nie ma jeszcze automatycznego tworzenia użytkownika administratora. W kolejnych etapach projektu zostanie to zautomatyzowane.
-
-Tymczasowo, aby utworzyć użytkownika administratora, wykonaj następujące kroki:
+Aby utworzyć pierwszego użytkownika administratora, wykonaj następujące kroki:
 
 1. Otwórz dokumentację API pod adresem: http://localhost:8000/docs
-2. Przejdź do sekcji `/users` i wykorzystaj endpoint POST aby utworzyć administratora:
+2. Przejdź do sekcji `/setup` i wykorzystaj endpoint POST `/setup/init-admin` aby utworzyć administratora:
 
 ```json
 {
@@ -74,12 +72,13 @@ Tymczasowo, aby utworzyć użytkownika administratora, wykonaj następujące kro
   "password": "admin123",
   "first_name": "Admin",
   "last_name": "System",
-  "is_active": true,
-  "is_superuser": true
+  "is_active": true
 }
 ```
 
-3. Zaloguj się przez frontend pod adresem http://localhost:3000
+3. Zaloguj się przez frontend pod adresem http://localhost:3000 używając utworzonych danych
+
+**Uwaga:** Endpoint `/setup/init-admin` będzie działał tylko przy pierwszym uruchomieniu, gdy baza danych jest pusta. Po utworzeniu pierwszego użytkownika, nie będzie można już korzystać z tego endpointu.
 
 ## 7. Migracja bazy danych
 
@@ -90,6 +89,8 @@ cd backend
 alembic revision --autogenerate -m "initial"
 alembic upgrade head
 ```
+
+Skrypt `start.sh` dla backendu automatycznie wykonuje migrację (`alembic upgrade head`), więc ten krok zwykle nie jest konieczny.
 
 ## 8. Rozwiązywanie problemów
 
@@ -104,7 +105,7 @@ Jeśli backend nie może połączyć się z bazą danych, upewnij się, że:
 
 2. Zmienne środowiskowe są poprawnie ustawione:
    ```bash
-   export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/mrp_db"
+   export DATABASE_URL="postgresql://postgres:postgres@db:5432/mrp_db"
    ```
 
 ### Problem z uruchomieniem frontendu
@@ -118,3 +119,15 @@ Jeśli frontend nie uruchamia się poprawnie, upewnij się, że:
    ```
 
 2. Port 3000 jest dostępny i nie jest używany przez inną aplikację
+
+### Problem z CORS
+
+Jeśli frontend nie może komunikować się z backendem z powodu błędów CORS, upewnij się, że:
+
+1. Backend ma prawidłowo skonfigurowane dozwolone źródła CORS:
+   ```python
+   # W pliku backend/app/core/config.py
+   BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+   ```
+
+2. Frontend używa poprawnych adresów URL do backendu (powinno być skonfigurowane przez `proxy` w package.json)
