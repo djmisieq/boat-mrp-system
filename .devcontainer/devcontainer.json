@@ -1,0 +1,27 @@
+{
+  "name": "Boat MRP System",
+  "build": {
+    "dockerfile": "../infrastructure/docker/Dockerfile.dev",
+    "context": ".."
+  },
+  "forwardPorts": [8000, 3000, 5432],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "github.copilot",
+        "github.vscode-github-actions"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "python.formatting.provider": "black",
+        "python.linting.enabled": true,
+        "python.linting.flake8Enabled": true
+      }
+    }
+  },
+  "postCreateCommand": "echo 'Workspace created successfully!'"
+}
